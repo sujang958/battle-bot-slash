@@ -1,19 +1,12 @@
-const Logger = require('../utils/Logger')
-const BaseManager = require('./BaseManager')
-const mongoose = require('mongoose')
-const quick = require('quick.db')
-const path = require('path')
-const fs = require('fs')
-
-/**
- * @extends {BaseManager}
- */
-class DatabaseManager extends BaseManager {
-  /**
-   * DatabaseManager constructor
-   * @param {import('../structures/BotClient')} client 
-   */
-  constructor (client) {
+import Logger from "@utils/Logger"
+import BaseManager from "./BaseManager"
+import mongoose from "mongoose"
+import quick from "quick.db"
+import path from "path"
+import fs from "fs"
+import BotClient from "@classes/BotClient"
+export default class DatabaseManager extends BaseManager {
+  constructor (client: BotClient) {
     super(client)
 
     this.logger = new Logger('DatabaseManager')
@@ -74,5 +67,3 @@ class DatabaseManager extends BaseManager {
     }
   }
 }
-
-module.exports = DatabaseManager

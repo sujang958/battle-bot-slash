@@ -1,11 +1,11 @@
 {
   "name": "battlebot",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "repository": "https://github.com/kiss8981/battle-bot-slash",
   "author": "Kisss",
   "license": "MIT",
   "scripts": {
-    "start": "node .",
+    "start": "ts-node src/index.ts",
     "test": "eslint ./ --fix",
     "dev": "nodemon .",
     "lint": "eslint ./",
@@ -29,8 +29,11 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^17.0.10",
     "eslint": "^8.1.0",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14",
+    "typescript": "^4.5.5"
   },
   "eslintIgnore": [
     "node_modules",
@@ -44,6 +47,7 @@
     "@events": "src/events",
     "@commands": "src/commands",
     "@managers": "src/managers",
-    "@utils": "src/utils"
+    "@utils": "src/utils",
+    "@types": "types/index.d.ts"
   }
 }

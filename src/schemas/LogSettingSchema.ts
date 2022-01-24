@@ -1,6 +1,7 @@
-const { Schema, model } = require('mongoose')
+import { Schema, model, models } from 'mongoose'
+import { loggerDB } from '@types'
 
-const LoggerSettingSchema = Schema({
+const LoggerSettingSchema: Schema<loggerDB> = new Schema({
   guild_id: String,
   guild_channel_id: String,
   useing: {
@@ -18,8 +19,8 @@ const LoggerSettingSchema = Schema({
     leaveVoiceChannel:{type: Boolean, default: false}
   },
   published_date: { type: Date, default: Date.now }
-}, {collection: 'LogChannel'})
+})
 
-const LoggerSetting = model('LogChannel', LoggerSettingSchema, 'LogChannel')
+const LoggerSetting = models.LogChannel || model('LogChannel', LoggerSettingSchema, 'LogChannel')
 
-module.exports = { LoggerSetting }
+export default LoggerSetting

@@ -1,24 +1,16 @@
-const Discord = require('discord.js')
+import { BotClient } from '../../types/index';
+import { MessageEmbed } from "discord.js"
+import { APIEmbed } from "discord-api-types/v9"
+type Type = 'success'|'error'|'warn'|'info'|'default'
 
-/**
- * @typedef {'success'|'error'|'warn'|'info'|'default'} EmbedType
- */
-
-/**
- * @extends {Discord.MessageEmbed}
- */
-class Embed extends Discord.MessageEmbed {
-  /**
-   * Custom embed constructor
-   * @param {Discord.Client} client 
-   * @param {EmbedType} type 
-   */
-  constructor(client, type) {
-    let EmbedJSON = {
-      timestamp: new Date(),
+export default class Embed extends MessageEmbed {
+  private client: BotClient
+  constructor(client: BotClient, type: Type) {
+    let EmbedJSON: APIEmbed = {
+      timestamp: String(new Date()),
       footer : {
-        text: client.user.username,
-        icon_url: client.user.avatarURL()
+        text: client.user?.username,
+        icon_url: client.user?.avatarURL()
       }
     }
   
@@ -55,11 +47,7 @@ class Embed extends Discord.MessageEmbed {
     
   }
 
-  /**
-   * Change the embed color
-   * @param {EmbedType} type 
-   */
-  setType(type) {
+  public setType(type: Type) {
     if(type === 'success') {
       this.color = '57F287'
     } else if(type === 'error') {
@@ -73,5 +61,3 @@ class Embed extends Discord.MessageEmbed {
     }
   }
 }
-
-module.exports = Embed

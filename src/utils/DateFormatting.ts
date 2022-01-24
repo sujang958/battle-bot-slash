@@ -1,17 +1,13 @@
 module.exports = class DateFormatting {
-    /**
-     * @param {Date|number} date Target date or timestamp.
-     * @param {string} format Date format.
-     **/
-    static _format (date, style) {
-      return `<t:${Math.floor(date / 1000)}` + (style ? `:${style}` : '') + '>'
+    static _format (date: Date|number, style: string) {
+      return `<t:${Math.floor(Number(date) / 1000)}` + (style ? `:${style}` : '') + '>'
     }
   
-    static relative (date) {
+    static relative (date: Date|number) {
       return this._format(date, 'R')
     }
 
-    static date(date) {
+    static date(date: Date|number) {
         let dates = new Date(date)
         let year = dates.getFullYear().toString().slice(-2);
         let month = ("0" + (dates.getMonth() + 1)).slice(-2);

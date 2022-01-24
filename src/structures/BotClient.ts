@@ -1,12 +1,13 @@
-const { Client, Collection } = require('discord.js')
-const Dokdo = new require('dokdo')
-const Logger = require('../utils/Logger')
-const { config } = require('dotenv')
+import { Client, Collection } from "discord.js"
+import Dokdo from 'dokdo'
+import Logger from '../utils/Logger'
+import { config } from "dotenv"
+import { BotClient as ClientTypes } from "@types"
 
-const CommandManager = require('../managers/CommandManager')
-const EventManager = require('../managers/EventManager')
-const DatabaseManager = require('../managers/DatabaseManager')
-const ButtonManager = require('../managers/ButtonManager')
+import CommandManager from '../managers/CommandManager'
+import EventManager from '../managers/EventManager'
+import DatabaseManager from '../managers/DatabaseManager'
+import ButtonManager from '../managers/ButtonManager'
 
 const logger = new Logger('bot')
 
@@ -38,16 +39,13 @@ const logger = new Logger('bot')
  * @typedef {string} Error
  */
 
-/**
- * Discord Bot Client
- * @extends {Client}
- */
-class BotClient extends Client {
-  /**
-   * BotClient constructor
-   * @param {import('discord.js').ClientOptions} options Discord client options
-   */
-  constructor(options = { parse: ['users', 'roles'], repliedUser: false }) {
+export default class BotClient extends Client {
+  public events: Collection<string, void>
+  public commands: Collection<string, Command>
+  public readonly VERSION: string
+  public readonly BUILD_NUMBER: string
+  public readonly config: any
+  constructor(options: import('discord.js').ClientOptions = { parse: ['users', 'roles'], repliedUser: false }) {
     super(options)
 
     config()
@@ -122,7 +120,7 @@ class BotClient extends Client {
    * Loggin in the bot
    * @param {string} token Discord bot token
    */
-  async start(token = process.env.TOKEN) {
+  public async start(token: string = process.env.TOKEN as string) {
     logger.info('Logging in bot...')
 
     this.command.load()
@@ -136,7 +134,7 @@ class BotClient extends Client {
    * Setting status
    * @param {'dev'|'online'} status 
    */
-  async setStatus(status = 'online', name = '점검중...') {
+  public async setStatus(status: 'dev' | 'online' = 'online', name = '점검중...') {
     if(status.includes('dev')) {
       logger.warn('Changed status to Developent mode')
 
@@ -159,5 +157,3 @@ class BotClient extends Client {
   }
 
 }
-
-module.exports = BotClient
