@@ -1,13 +1,13 @@
-import { BotClient } from '../../types/index'
-import { MessageEmbed } from 'discord.js'
-import { APIEmbed } from 'discord-api-types/v9'
+import BotClient from '@client'
+import { MessageEmbed, MessageEmbedOptions } from 'discord.js'
 type Type = 'success'|'error'|'warn'|'info'|'default'
 
 export default class Embed extends MessageEmbed {
 	private client: BotClient
+	
 	constructor(client: BotClient, type: Type) {
-		let EmbedJSON: APIEmbed = {
-			timestamp: String(new Date()),
+		let EmbedJSON: MessageEmbedOptions = {
+			timestamp: new Date(),
 			footer : {
 				text: client.user?.username,
 				icon_url: client.user?.avatarURL()
@@ -17,27 +17,27 @@ export default class Embed extends MessageEmbed {
 		if(type === 'success') {
 			EmbedJSON = {
 				...EmbedJSON,
-				color: '57F287',
+				color: '#57F287',
 			}
 		} else if(type === 'error') {
 			EmbedJSON = {
 				...EmbedJSON,
-				color: 'ED4245',
+				color: '#ED4245',
 			}
 		} else if(type === 'warn') {
 			EmbedJSON = {
 				...EmbedJSON,
-				color: 'FEE75C',
+				color: '#FEE75C',
 			}
 		} else if(type === 'info') {
 			EmbedJSON = {
 				...EmbedJSON,
-				color: '5865F2',
+				color: '#5865F2',
 			}
 		} else if(type === 'default') {
 			EmbedJSON = {
 				...EmbedJSON,
-				color: '5865F2',
+				color: '#5865F2',
 			}
 		}
     
@@ -49,15 +49,15 @@ export default class Embed extends MessageEmbed {
 
 	public setType(type: Type) {
 		if(type === 'success') {
-			this.color = '57F287'
+			this.setColor('#57F287')
 		} else if(type === 'error') {
-			this.color = 'ED4245'
+			this.setColor('#ED4245')
 		} else if(type === 'warn') {
-			this.color = 'FEE75C'
+			this.setColor('##FEE75C')
 		} else if(type === 'info') {
-			this.color = '5865F2'
+			this.setColor('#5865F2')
 		} else if(type === 'default') {
-			this.color = '5865F2'
+			this.setColor('#5865F2')
 		}
 	}
 }

@@ -4,7 +4,7 @@ import stripColor from 'strip-ansi'
 import { createLogger, format, transports, addColors } from 'winston'
 const { printf, splat, colorize, timestamp, ms, combine } = format
 
-const config = require('../../config')
+import config from '../../config'
 
 const colors = {
 	fatal: chalk.bgWhite.red.bold,

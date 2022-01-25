@@ -1,10 +1,13 @@
-import Logger from '@utils/Logger'
-import { ShardingManager } from 'discord.js'
+/* eslint-disable @typescript-eslint/no-var-requires */
+import 'module-alias/register'
 
-const config = require('../config')
+import Logger from './utils/Logger'
+import { ShardingManager } from 'discord.js'
+import chalk from 'chalk'
+import config from '../config'
 const logger = new Logger('main')
 
-console.log(require('chalk').cyanBright(`
+console.log(chalk.cyanBright(`
 =========================================================
 
             ${require('../package.json').name}@${config.BUILD_NUMBER}

@@ -1,10 +1,10 @@
 import BotClient from '@client'
 
-const Logger = require('../utils/Logger')
+import Logger from '../utils/Logger'
 import BaseManager from './BaseManager'
 import fs from 'fs'
 import path from 'path'
-import { Command } from '@types'
+import { Command, SlashCommand } from '@types'
 import { Collection, Snowflake } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
@@ -19,7 +19,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
  * @extends {BaseManager}
  */
 class CommandManager extends BaseManager {
-	private logger: typeof Logger
+	private logger: Logger
 	private commands: Collection<string, Command>
 	private categorys: BotClient['categorys']
 
@@ -109,7 +109,7 @@ class CommandManager extends BaseManager {
 		})
 	}
 
-	async slashCommandSetup(guildID: Snowflake): SlashCommandBuilder[] {
+	async slashCommandSetup(guildID: Snowflake): Promise<any> {
 		this.logger.scope = 'CommandManager: SlashSetup'
 
 		const slashCommands = []

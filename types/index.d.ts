@@ -2,10 +2,12 @@ import BotClient from '@client'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import {
 	ClientEvents,
+	ClientOptions,
 	CommandInteraction,
 	MessageEmbed,
+	ShardingManagerOptions,
 } from 'discord.js'
-import { Types as mongoTypes } from 'mongoose'
+import { MongooseOptions, Types as mongoTypes } from 'mongoose'
 export interface loggerDB {
   _id: mongoTypes.ObjectId
   guild_id: string
@@ -72,11 +74,20 @@ export type colorType =
   | 'verbose'
   | 'debug'
 
+export interface SlashCommand {
+  name: string
+  description?: string
+  data: SlashCommandBuilder
+  execute: (
+    client: BotClient,
+    interaction: CommandInteraction
+  ) => Promise<void | any>
+}
 export interface Command {
   name: string
   description?: string
   usage?: string
-  aliases: string[]
+  aliases?: string[]
   isSlash?: boolean
   data?: SlashCommandBuilder
   execute: (
@@ -102,3 +113,42 @@ export interface Event {
   execute: (client: BotClient, ...args: any[]) => Promise<void | any>
 }
 export type EmbedType = 'success' | 'error' | 'warn' | 'info' | 'default'
+
+export type ErrorReportType = 'webhook'|'text'
+
+export interface config {
+  BUILD_NUMBER: string
+  BUILD_VERSION: string
+  githubToken: string
+  web: {
+    baseurl: string
+  }
+  bot: {
+    sharding: boolean
+    shardingOptions?: ShardingManagerOptions
+    token: string
+    options: ClientOptions
+    prefix: string
+    owners: string[]
+    cooldown: number
+  }
+  database: {
+    type: 'mongodb' | 'sqlite'
+    url?: string
+    options?: any
+  }
+  logger: {
+    dev: boolean
+    level: colorType
+  }
+  report: {
+    type: ErrorReportType
+    webhook?: {
+      url: string
+    }
+    text?: {
+      guildID: string
+      channelID: string
+    }
+  }
+}

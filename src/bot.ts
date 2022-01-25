@@ -1,8 +1,8 @@
-import Logger from '@utils/Logger'
+import Logger from './utils/Logger'
 import BotClient from '@client'
 const logger = new Logger('main')
 
-const config = require('../config')
+import config from '../config'
 
 logger.log('Starting up...')
 

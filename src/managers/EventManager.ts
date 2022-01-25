@@ -2,13 +2,16 @@ import BotClient from '@client'
 import { Event } from '@types'
 import fs from 'fs'
 import path from 'path'
-const Logger = require('../utils/Logger')
-const BaseManager = require('./BaseManager')
+import Logger from '../utils/Logger'
+import BaseManager from './BaseManager'
 
 /**
  * @extends {BaseManager}
  */
 class EventManager extends BaseManager {
+	private logger: Logger
+	private events: BotClient['events']
+	
 	constructor(client: BotClient) {
 		super(client)
 
@@ -34,7 +37,7 @@ class EventManager extends BaseManager {
 				if (!(await event).name)
 					return this.logger.debug(`Event ${eventFile} has no name. Skipping.`)
 
-				this.events.set(event.name, event)
+				this.events.set((await event).name, event)
 				this.logger.debug(`Loaded event ${eventFile}`)
 			} catch (error) {
 				this.logger.error(

@@ -1,3 +1,4 @@
+import { config as configOptions } from '@types'
 import { readFileSync } from 'fs'
 
 let BUILD_NUMBER = readFileSync('.git/HEAD').toString().trim()
@@ -12,7 +13,7 @@ if (BUILD_NUMBER?.indexOf(':') === -1) {
 	}
 }
 
-export default {
+const config: configOptions = {
 	BUILD_VERSION : '0.0.1-dev',
 	BUILD_NUMBER,
 	githubToken: '',
@@ -38,9 +39,6 @@ export default {
 		cooldown: 2000,
 	},
 	report: {
-		/**
-     * @type {'webhook', 'text'}
-     */
 		type: 'webhook',
 		webhook: {
 			url: '',
@@ -66,3 +64,5 @@ export default {
 		dev: false,
 	}
 }
+
+export default config

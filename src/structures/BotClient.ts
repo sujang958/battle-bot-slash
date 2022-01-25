@@ -2,7 +2,7 @@ import { Client, ClientOptions, Collection } from 'discord.js'
 import Dokdo from 'dokdo'
 import Logger from '../utils/Logger'
 import { config } from 'dotenv'
-import { Command } from '@types'
+import { Command, Event as EventInterface } from '@types'
 
 import CommandManager from '../managers/CommandManager'
 import EventManager from '../managers/EventManager'
@@ -13,7 +13,7 @@ import { Mongoose } from 'mongoose'
 const logger = new Logger('bot')
 
 export default class BotClient extends Client {
-	public events: Collection<string, void>
+	public events: Collection<string, EventInterface>
 	public commands: Collection<string, Command>
 	public categorys: Collection<string, string[]>
 	public buttons: Collection<string, unknown>
@@ -23,7 +23,7 @@ export default class BotClient extends Client {
 	public schemas: Collection<string, any> // TODO: mongoose Model
 	public command: CommandManager
 	public button: any
-	public event: any
+	public event: EventManager
 	public database: DatabaseManager
 
 	public readonly VERSION: string
