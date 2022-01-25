@@ -1,30 +1,21 @@
-const { GuildChannel } = require('discord.js')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const LogEmbed = require('../utils/LogEmbed')
-
+import { GuildChannel, TextChannel } from 'discord.js'
+import LogEmbed from '@utils/LogEmbed'
+import BotClient from '@client'
 
 module.exports = {
-  name: 'channelCreate',
-  /**
-   * 
-   * @param {import('../structures/BotClient')} client 
-   * @param {GuildChannel} channel 
-   */
-  async execute(client, channel) {
-    let LoggerSettingDB = await LoggerSetting.findOne({guild_id: channel.guild.id})
-    if(!LoggerSettingDB) return
-    if(!LoggerSettingDB.useing.createChannel) return
-    let logChannel = channel.guild.channels.cache.get(LoggerSettingDB.guild_channel_id)
-    if(!logChannel) return
-    let embed = new LogEmbed(client, 'success')
-        .setDescription('채널 생성')
-        .addFields({
-            name: "채널",
-            value: `<#${channel.id}>` + "(`" + channel.id + "`)"
-        }, {
-            name: "카테고리",
-            value: channel.parent.name
-        })
-    return await logChannel.send({embeds: [embed]})
-  }
+	name: 'channelCreate',
+	async execute(client: BotClient, channel: GuildChannel) {
+		const LoggerSetting = client.schemas.get('LoggerSetting')
+		const LoggerSettingDB = await LoggerSetting.findOne({guild_id: channel.guild.id})
+		if(!LoggerSettingDB) return
+		if(!LoggerSettingDB.useing.createChannel) return
+		const logChannel = channel.guild.channels.cache.get(LoggerSettingDB.guild_channel_id) as TextChannel
+
+		if(!logChannel) return
+		const embed = new LogEmbed(client, 'success')
+			.setDescription('채널 생성')
+			.addField('채널', `<#${channel.id}>` + '(`' + channel.id + '`)')
+      .addField('카테고리', channel.parent?.name as string)
+		return await logChannel.send({embeds: [embed]})
+	}
 }

@@ -1,5 +1,7 @@
-const fs = require('fs')
-const path = require('path')
+import BotClient from '@client'
+import { Event } from '@types'
+import fs from 'fs'
+import path from 'path'
 const Logger = require('../utils/Logger')
 const BaseManager = require('./BaseManager')
 
@@ -7,120 +9,120 @@ const BaseManager = require('./BaseManager')
  * @extends {BaseManager}
  */
 class EventManager extends BaseManager {
-  /**
-   * EventManager constructor
-   * @param {import('../structures/BotClient')} client 
-   */
-  constructor(client) {
-    super(client)
+	constructor(client: BotClient) {
+		super(client)
 
-    this.logger = new Logger('EventManager')
+		this.logger = new Logger('EventManager')
 
-    this.events = client.events
-  }
+		this.events = client.events
+	}
 
-  async load(eventPath = path.join(__dirname, '../events')) {
-    this.logger.debug('Loading events...')
+	async load(eventPath = path.join(__dirname, '../events')) {
+		this.logger.debug('Loading events...')
 
-    const eventFiles = fs.readdirSync(eventPath)
+		const eventFiles = fs.readdirSync(eventPath)
 
-    eventFiles.forEach(async (eventFile) => {
-      try {
-        if(!eventFile.endsWith('.js')) return this.logger.debug(`Not a Javascript file ${eventFile}. Skipping.`)
-        
-        let event = require(`../events/${eventFile}`)
+		eventFiles.forEach(async (eventFile) => {
+			try {
+				if (!eventFile.endsWith('.js'))
+					return this.logger.debug(
+						`Not a Javascript file ${eventFile}. Skipping.`
+					)
 
-        if(!event.name) return this.logger.debug(`Event ${eventFile} has no name. Skipping.`)
+				const event: Promise<Event> = import(`../events/${eventFile}`)
 
-        this.events.set(event.name, event)
-        this.logger.debug(`Loaded event ${eventFile}`)
-      } catch (error) {
-        this.logger.error(`Error loading events '${eventFile}'.\n` + error.stack)
-      } 
-    })
-    this.logger.debug(`Succesfully loaded events. count: ${this.events.size}`)
+				if (!(await event).name)
+					return this.logger.debug(`Event ${eventFile} has no name. Skipping.`)
 
-    this.start()
-  }
+				this.events.set(event.name, event)
+				this.logger.debug(`Loaded event ${eventFile}`)
+			} catch (error) {
+				this.logger.error(
+					`Error loading events '${eventFile}'.\n` + error.stack
+				)
+			}
+		})
+		this.logger.debug(`Succesfully loaded events. count: ${this.events.size}`)
 
-  async start() {
-    this.logger.debug('Starting event files...')
+		this.start()
+	}
 
-    //this.client.removeAllListeners()
-    this.events.forEach((event, eventName) => {     
-      if (event.once) {
-        this.client.once(eventName, (...args) => {
-          event.execute(this.client, ...args)
-        })
+	async start() {
+		this.logger.debug('Starting event files...')
 
-        this.logger.debug(`Started event '${eventName}' once.`)
-      } else {
-        this.client.on(eventName, (...args) => {
-          event.execute(this.client, ...args)
-        })
-        
-        this.logger.debug(`Started event '${eventName}' on.`)
-      }
-    })
-  }
+		//this.client.removeAllListeners()
+		this.events.forEach((event, eventName) => {
+			if (event.once) {
+				this.client.once(eventName, (...args) => {
+					event.execute(this.client, ...args)
+				})
 
-  /**
+				this.logger.debug(`Started event '${eventName}' once.`)
+			} else {
+				this.client.on(eventName, (...args) => {
+					event.execute(this.client, ...args)
+				})
+
+				this.logger.debug(`Started event '${eventName}' on.`)
+			}
+		})
+	}
+
+	/**
    * @param {import('discord.js').ClientEvents} eventName
    */
-  reload(eventName) {
-    if(!this.events.has(eventName)) {
-      return this.logger.warn(`Event '${eventName}' not found.`)
-    } else {
-      this.logger.debug(`Reloading ${eventName}...`)
-      this.events.delete(eventName)
+	reload(eventName) {
+		if (!this.events.has(eventName)) {
+			return this.logger.warn(`Event '${eventName}' not found.`)
+		} else {
+			this.logger.debug(`Reloading ${eventName}...`)
+			this.events.delete(eventName)
 
-      const eventFiles = fs.readdirSync(path.join(__dirname, '../events'))
+			const eventFiles = fs.readdirSync(path.join(__dirname, '../events'))
 
-      eventFiles.forEach(async (eventFile) => {
-        try {
-          let event = require(`../events/${eventFile}`)
+			eventFiles.forEach(async (eventFile) => {
+				try {
+					const event = require(`../events/${eventFile}`)
 
-          if(event.name === eventName) {
-            this.client.removeListener(eventName, async (...args) => {
-              event.execute(this.client, ...args)
-            })
-            this.events.set(event.name, event)
-            this.logger.debug(`Loaded event ${eventName}`)
-          }
-
-        } catch (error) {
-          console.log(error)
-        } 
-      })
-    }
-  }
-  /**
-   * @param {string} eventPath 
+					if (event.name === eventName) {
+						this.client.removeListener(eventName, async (...args) => {
+							event.execute(this.client, ...args)
+						})
+						this.events.set(event.name, event)
+						this.logger.debug(`Loaded event ${eventName}`)
+					}
+				} catch (error) {
+					console.log(error)
+				}
+			})
+		}
+	}
+	/**
+   * @param {string} eventPath
    */
-  reloadAll(eventPath = path.join(__dirname, '../events')) {
-    this.logger.debug('Reloading events...')
+	reloadAll(eventPath = path.join(__dirname, '../events')) {
+		this.logger.debug('Reloading events...')
 
-    this.events.clear()
-    this.load(eventPath)
-  }
+		this.events.clear()
+		this.load(eventPath)
+	}
 
-  /**
-   * @param {import('discord.js').ClientEvents} eventName 
+	/**
+   * @param {import('discord.js').ClientEvents} eventName
    * @param {Function} fn
    * @example EventManager.register('ready', (client) => {
    *  console.log(`${client.user.tag} is ready!`)
    * })
    */
-  register(eventName, fn) {
-    this.events.set(eventName, fn)
+	register(eventName, fn) {
+		this.events.set(eventName, fn)
 
-    this.client.addListener(eventName, (...args) => {
-      fn(this.client, ...args)
-    })
+		this.client.addListener(eventName, (...args) => {
+			fn(this.client, ...args)
+		})
 
-    this.logger.debug(`Registered event '${eventName}'`)
-  }
-
+		this.logger.debug(`Registered event '${eventName}'`)
+	}
 }
 
-module.exports = EventManager
+export default EventManager

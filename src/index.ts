@@ -1,10 +1,8 @@
-require('module-alias')()
+import Logger from '@utils/Logger'
+import { ShardingManager } from 'discord.js'
 
-const Logger = require('./utils/Logger')
-const { ShardingManager } = require('discord.js')
-
-let config = require('../config')
-let logger = new Logger('main')
+const config = require('../config')
+const logger = new Logger('main')
 
 console.log(require('chalk').cyanBright(`
 =========================================================
@@ -16,12 +14,12 @@ console.log(require('chalk').cyanBright(`
 `))
 
 if(!config.bot.sharding) {
-  require('./bot.js')
+	require('./bot')
 } else {
-  let manager = new ShardingManager('./src/bot.js', config.bot.shardingOptions)
+	const manager = new ShardingManager('./src/bot', config.bot.shardingOptions)
 
-  manager.spawn()
-  manager.on('shardCreate', async (shard) => {
-    logger.debug(`Shard #${shard.id} created.`)
-  })
+	manager.spawn()
+	manager.on('shardCreate', async (shard) => {
+		logger.debug(`Shard #${shard.id} created.`)
+	})
 }

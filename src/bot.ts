@@ -1,16 +1,16 @@
-const Logger = require('./utils/Logger')
+import Logger from '@utils/Logger'
+import BotClient from '@client'
 const logger = new Logger('main')
-const BotClient = require('./structures/BotClient')
 
-let config = require('../config')
+const config = require('../config')
 
 logger.log('Starting up...')
 
-process.on('uncaughtException', (e) => logger.error(e.stack))
-process.on('unhandledRejection', (e) => logger.error(e.stack))
+process.on('uncaughtException', (e) => logger.error(e.stack as string))
+process.on('unhandledRejection', (e: Error) => logger.error(e.stack as string))
 
 
-let client = new BotClient(config.bot.options)
+const client = new BotClient(config.bot.options)
 
 
 client.start(config.bot?.token)

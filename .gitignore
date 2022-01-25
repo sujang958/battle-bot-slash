@@ -21,5 +21,6 @@ config.*
 .vscode
 .DS_Store
 
+build/
 # Database
 *.sqlite
