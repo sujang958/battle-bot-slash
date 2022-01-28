@@ -1,16 +1,12 @@
-const { GuildBan } = require('discord.js')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const LogEmbed = require('../utils/LogEmbed')
+import BotClient from "@client"
+import { GuildBan } from "discord.js"
+import LoggerSetting from '../schemas/LogSettingSchema'
+import LogEmbed from '../utils/LogEmbed'
 
 
 module.exports = {
 	name: 'guildBanAdd',
-	/**
-   * 
-   * @param {import('../structures/BotClient')} client 
-   * @param {GuildBan} ban 
-   */
-	async execute(client, ban) {
+	async execute(client: BotClient, ban: GuildBan) {
 		const LoggerSettingDB = await LoggerSetting.findOne({guild_id: ban.guild.id})
 		if(!LoggerSettingDB) return
 		if(!LoggerSettingDB.useing.memberBan) return

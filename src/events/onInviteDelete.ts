@@ -1,15 +1,11 @@
 import BotClient from '@client'
-import { Invite, InviteGuild } from 'discord.js'
+import { Guild, Invite, InviteGuild, TextChannel } from 'discord.js'
 
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const LogEmbed = require('../utils/LogEmbed')
+import LoggerSetting from '../schemas/LogSettingSchema'
+import LogEmbed from '../utils/LogEmbed'
 
 module.exports = {
 	name: 'inviteDelete',
-	/**
-   * @param {import('../structures/BotClient')} client
-   * @param {Invite} invite
-   */
 	async execute(client: BotClient, invite: Invite) {
 		if (!invite.guild) return
 		const LoggerSettingDB = await LoggerSetting.findOne({
@@ -17,9 +13,9 @@ module.exports = {
 		})
 		if (!LoggerSettingDB) return
 		if (!LoggerSettingDB.useing.memberBan) return
-		const logChannel = invite.guild.channels.cache.get(
-			LoggerSettingDB.guild_channel_id
-		)
+		const logGuild = invite.guild as Guild
+		let logChannel = logGuild.channels.cache.get(LoggerSettingDB.guild_channel_id) as TextChannel
+
 		if (!logChannel) return
 		const embed = new LogEmbed(client, 'error').setDescription('초대코드 삭제')
 		embed.addField('초대코드', invite.code)

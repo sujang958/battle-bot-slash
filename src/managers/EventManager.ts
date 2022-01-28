@@ -1,14 +1,12 @@
 import BotClient from '@client'
 import { Event } from '@types'
+import { ClientEvents } from 'discord.js'
 import fs from 'fs'
 import path from 'path'
 import Logger from '../utils/Logger'
 import BaseManager from './BaseManager'
 
-/**
- * @extends {BaseManager}
- */
-class EventManager extends BaseManager {
+export default class EventManager extends BaseManager {
 	private logger: Logger
 	private events: BotClient['events']
 	
@@ -27,17 +25,17 @@ class EventManager extends BaseManager {
 
 		eventFiles.forEach(async (eventFile) => {
 			try {
-				if (!eventFile.endsWith('.js'))
+				if (!eventFile.endsWith('.ts'))
 					return this.logger.debug(
-						`Not a Javascript file ${eventFile}. Skipping.`
+						`Not a TypeScript file ${eventFile}. Skipping.`
 					)
 
-				const event: Promise<Event> = import(`../events/${eventFile}`)
+				const event: Event= require(`../events/${eventFile}`)
 
-				if (!(await event).name)
+				if (!event.name)
 					return this.logger.debug(`Event ${eventFile} has no name. Skipping.`)
 
-				this.events.set((await event).name, event)
+				this.events.set(event.name, event)
 				this.logger.debug(`Loaded event ${eventFile}`)
 			} catch (error) {
 				this.logger.error(
@@ -71,10 +69,7 @@ class EventManager extends BaseManager {
 		})
 	}
 
-	/**
-   * @param {import('discord.js').ClientEvents} eventName
-   */
-	reload(eventName) {
+	reload(eventName: string) {
 		if (!this.events.has(eventName)) {
 			return this.logger.warn(`Event '${eventName}' not found.`)
 		} else {
@@ -100,9 +95,7 @@ class EventManager extends BaseManager {
 			})
 		}
 	}
-	/**
-   * @param {string} eventPath
-   */
+
 	reloadAll(eventPath = path.join(__dirname, '../events')) {
 		this.logger.debug('Reloading events...')
 
@@ -111,13 +104,11 @@ class EventManager extends BaseManager {
 	}
 
 	/**
-   * @param {import('discord.js').ClientEvents} eventName
-   * @param {Function} fn
    * @example EventManager.register('ready', (client) => {
    *  console.log(`${client.user.tag} is ready!`)
    * })
    */
-	register(eventName, fn) {
+	register(eventName: string, fn) {
 		this.events.set(eventName, fn)
 
 		this.client.addListener(eventName, (...args) => {
@@ -128,4 +119,4 @@ class EventManager extends BaseManager {
 	}
 }
 
-export default EventManager
+

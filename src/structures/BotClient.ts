@@ -1,8 +1,9 @@
 import { Client, ClientOptions, Collection } from 'discord.js'
 import Dokdo from 'dokdo'
 import Logger from '../utils/Logger'
-import { config } from 'dotenv'
-import { Command, Event as EventInterface } from '@types'
+import { config as configSetup } from 'dotenv'
+import config from '@config'
+import { Command, Event as EventInterface, MessageCommand, SlashCommand } from '@types'
 
 import CommandManager from '../managers/CommandManager'
 import EventManager from '../managers/EventManager'
@@ -14,7 +15,7 @@ const logger = new Logger('bot')
 
 export default class BotClient extends Client {
 	public events: Collection<string, EventInterface>
-	public commands: Collection<string, Command>
+	public commands: Collection<string, MessageCommand|SlashCommand|Command>
 	public categorys: Collection<string, string[]>
 	public buttons: Collection<string, unknown>
 	public errors: Collection<string, string>
@@ -33,15 +34,17 @@ export default class BotClient extends Client {
 
 	constructor(
 		options: ClientOptions = {
-			//parse: ["users", "roles"],
-			//repliedUser: false,
-			intents: [],
+			allowedMentions: {
+				parse: ['users', 'roles'],
+				repliedUser: false,
+			},
+			intents: [32767],
 		}
 	) {
 		super(options)
 
-		config()
-		this.config = require('../../config')
+		configSetup()
+		this.config = config
 
 		this.VERSION = this.config.BUILD_VERSION
 		this.BUILD_NUMBER = this.config.BUILD_NUMBER
@@ -55,7 +58,7 @@ export default class BotClient extends Client {
 		this.dokdo = new Dokdo(this, {
 			prefix: this.config.bot.prefix,
 			owners: this.config.bot.owners,
-			noPerm: (message) => message.reply('당신은 쓸수없음'),
+			noPerm: (message) => message.reply(`해당 명령어는 ${message.client.user.username}봇 관리자 전용 명령어입니다 `),
 		})
 		this.db
 		this.schemas = new Collection()

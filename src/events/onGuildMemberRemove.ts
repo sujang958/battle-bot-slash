@@ -1,6 +1,7 @@
-const { GuildMember } = require('discord.js')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const LogEmbed = require('../utils/LogEmbed')
+import BotClient from "@client"
+import { GuildMember, TextChannel } from "discord.js"
+import LoggerSetting from '../schemas/LogSettingSchema'
+import LogEmbed from '../utils/LogEmbed'
 
 
 module.exports = {
@@ -10,15 +11,18 @@ module.exports = {
    * @param {import('../structures/BotClient')} client 
    * @param {GuildMember} member 
    */
-	async execute(client, member) {
+	async execute(client: BotClient, member: GuildMember) {
 		const LoggerSettingDB = await LoggerSetting.findOne({guild_id: member.guild.id})
 		if(!LoggerSettingDB) return
 		if(!LoggerSettingDB.useing.memberLeft) return
-		const logChannel = member.guild.channels.cache.get(LoggerSettingDB.guild_channel_id)
+		const logChannel = member.guild.channels.cache.get(LoggerSettingDB.guild_channel_id) as TextChannel
 		if(!logChannel) return
 		const embed = new LogEmbed(client, 'error')
 			.setDescription('멤버 퇴장')
-			.setAuthor(member.user.username, member.user.displayAvatarURL())
+			.setAuthor({
+				name: member.user.tag,
+				iconURL: member.user.displayAvatarURL()
+			})
 			.addFields({
 				name: '유저',
 				value: `<@${member.user.id}>` + '(`' + member.user.id + '`)'

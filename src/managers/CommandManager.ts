@@ -4,26 +4,16 @@ import Logger from '../utils/Logger'
 import BaseManager from './BaseManager'
 import fs from 'fs'
 import path from 'path'
-import { Command, SlashCommand } from '@types'
-import { Collection, Snowflake } from 'discord.js'
+import { Command, MessageCommand, SlashCommand } from '@types'
+import { ApplicationCommandDataResolvable, Collection, Snowflake } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
-/**
- * @typedef {Object} executeOptions
- * @property {import('../structures/BotClient')} client
- * @property {import('discord.js').Message} message
- * @property {string[]} args
- */
-
-/**
- * @extends {BaseManager}
- */
-class CommandManager extends BaseManager {
+export default class CommandManager extends BaseManager {
 	private logger: Logger
-	private commands: Collection<string, Command>
+	private commands: BotClient['commands']
 	private categorys: BotClient['categorys']
 
-	constructor(client: BotClient) {
+	public constructor(client: BotClient) {
 		super(client)
 
 		this.logger = new Logger('CommandManager')
@@ -46,9 +36,9 @@ class CommandManager extends BaseManager {
 
 					commandFiles.forEach((commandFile) => {
 						try {
-							if (!commandFile.endsWith('.js'))
+							if (!commandFile.endsWith('.ts'))
 								return this.logger.warn(
-									`Not a Javascript file ${commandFile}. Skipping.`
+									`Not a TypeScript file ${commandFile}. Skipping.`
 								)
 
 							const command = require(`../commands/${folder}/${commandFile}`)
@@ -85,21 +75,17 @@ class CommandManager extends BaseManager {
 		}
 	}
 
-	get(commandName: string): Command | Command[] | null {
+	get(commandName: string): Command | Command[] | any {
 		const returnCommand = this.client.commands.get(commandName)
-		const commandList = this.client.commands.find(
-			(cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-		)
+		const commandList = this.client.commands.find((cmd: MessageCommand) => {
+			if(cmd.aliases)
+				return cmd.aliases.includes(commandName)
+		})
 		if (returnCommand) return returnCommand
 		else if (commandList) return commandList
 		else return null
 	}
 
-	/**
-   * reloading command
-   * @param {string} commandPath
-   * @return {string|Error}
-   */
 	reload(commandPath = path.join(__dirname, '../commands')) {
 		this.logger.debug('Reloading commands...')
 		this.commands.clear()
@@ -112,11 +98,11 @@ class CommandManager extends BaseManager {
 	async slashCommandSetup(guildID: Snowflake): Promise<any> {
 		this.logger.scope = 'CommandManager: SlashSetup'
 
-		const slashCommands = []
-		for (const command of this.client.commands) {
-			if (command[1].isSlash || command[1].slash) {
+		const slashCommands: ApplicationCommandDataResolvable[] = []
+		for (let command of this.client.commands as Collection<string, SlashCommand>) {
+			if (command[1].isSlash || command[1]?.slash) {
 				slashCommands.push(
-					command[1].isSlash ? command[1].data : command[1].slash?.data
+					command[1].isSlash? command[1].data : command[1]?.slash.data
 				)
 			}
 		}
@@ -141,4 +127,3 @@ class CommandManager extends BaseManager {
 	}
 }
 
-export default CommandManager

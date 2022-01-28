@@ -1,9 +1,9 @@
 import BotClient from '@client'
 
-const Logger = require('../utils/Logger')
-const BaseManager = require('./BaseManager')
-const fs = require('fs')
-const path = require('path')
+import Logger from '../utils/Logger'
+import BaseManager from './BaseManager'
+import fs from 'fs'
+import path from 'path'
 
 /**
  * @typedef {Object} executeOptions
@@ -15,7 +15,10 @@ const path = require('path')
 /**
  * @extends {BaseManager}
  */
-class ButtonManager extends BaseManager {
+export default class ButtonManager extends BaseManager {
+	private logger: Logger
+	private buttons: any
+
 	constructor(client: BotClient) {
 		super(client)
 
@@ -27,7 +30,7 @@ class ButtonManager extends BaseManager {
    * Load v from a directory
    * @param {string} ButtonPath ButtonPath is the path to the folder containing the commands
    */
-	async load(buttonPath = path.join(__dirname, '../buttons')) {
+	public async load(buttonPath = path.join(__dirname, '../buttons')) {
 		this.logger.debug('Loading buttons...')
 
 		const buttonFolder = fs.readdirSync(buttonPath)
@@ -41,9 +44,9 @@ class ButtonManager extends BaseManager {
 
 					buttonFiles.forEach((buttonFile) => {
 						try {
-							if (!buttonFile.endsWith('.js'))
+							if (!buttonFile.endsWith('.ts'))
 								return this.logger.warn(
-									`Not a Javascript file ${buttonFile}. Skipping.`
+									`Not a TypeScript file ${buttonFile}. Skipping.`
 								)
 
 							const button = require(`../buttons/${folder}/${buttonFile}`)
@@ -76,12 +79,7 @@ class ButtonManager extends BaseManager {
 		}
 	}
 
-	/**
-   *
-   * @param {string} buttonName
-   * @returns {import('../structures/BotClient').Command}
-   */
-	get(buttonName) {
+	public get(buttonName: string) {
 		if (this.client.buttons.has(buttonName))
 			return this.client.buttons.get(buttonName)
 		else if (
@@ -94,12 +92,7 @@ class ButtonManager extends BaseManager {
 			)
 	}
 
-	/**
-   * reloading command
-   * @param {string} buttonPath
-   * @return {string|Error}
-   */
-	reload(buttonPath = path.join(__dirname, '../buttons')) {
+	public reload(buttonPath: string = path.join(__dirname, '../buttons')) {
 		this.logger.debug('Reloading buttons...')
 
 		this.buttons.clear()
@@ -110,5 +103,3 @@ class ButtonManager extends BaseManager {
 		})
 	}
 }
-
-export default ButtonManager

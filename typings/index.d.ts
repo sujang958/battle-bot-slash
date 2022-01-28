@@ -1,9 +1,11 @@
 import BotClient from '@client'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types'
 import {
 	ClientEvents,
 	ClientOptions,
 	CommandInteraction,
+	Message,
 	MessageEmbed,
 	ShardingManagerOptions,
 } from 'discord.js'
@@ -77,38 +79,34 @@ export type colorType =
 export interface SlashCommand {
   name: string
   description?: string
-  data: SlashCommandBuilder
+  isSlash: boolean
+  data: RESTPostAPIApplicationCommandsJSONBody
   execute: (
     client: BotClient,
     interaction: CommandInteraction
   ) => Promise<void | any>
 }
+
 export interface Command {
+  
+  slash?: SlashCommand
+}
+
+export interface MessageCommand {
   name: string
   description?: string
   usage?: string
-  aliases?: string[]
+  aliases: string[]
   isSlash?: boolean
-  data?: SlashCommandBuilder
   execute: (
     client: BotClient,
-    interaction?: CommandInteraction,
-    message?: Message,
-    args?: string[]
+    message: Message,
+    args: string[]
   ) => Promise<void | any>
-  slash?: {
-    name: string
-    description?: string
-    data: SlashCommandBuilder
-    execute: (
-      client: BotClient,
-      interaction: CommandInteraction
-    ) => Promise<void | any>
-  }
 }
 
 export interface Event {
-  name: ClientEvents
+  name: string
   once?: boolean
   execute: (client: BotClient, ...args: any[]) => Promise<void | any>
 }
@@ -150,5 +148,62 @@ export interface config {
       guildID: string
       channelID: string
     }
+  }
+}
+
+export interface ErrorExecuter {
+  executer: Message|CommandInteraction|any
+  userSend?: boolean
+}
+
+export interface GithubCommitAPI {
+  sha: string
+  commit: {
+    author: {
+      name: string
+      email: string
+      date: string
+    }
+    committer: {
+      name: string
+      email: string
+      date: string
+    }
+    message: string
+    tree: {
+      sha: string
+      url: string
+    }
+    url: string
+    comment_count: number
+    verification: {
+      verified: boolean
+      reason: string
+      signature: null
+      payload: null
+    }
+  }
+  url: string
+  html_url: string
+  comments_url: string
+  author: {
+    login: string
+    id: number
+    node_id: string
+    avatar_url: string
+    gravatar_id: string
+    url: string
+    html_url: string
+    followers_url: string
+    following_url: string
+    gists_url: string
+    starred_url: string
+    subscriptions_url: string
+    organizations_url: string
+    repos_url: string
+    events_url: string
+    received_events_url: string
+    type: string
+    site_admin: boolean
   }
 }

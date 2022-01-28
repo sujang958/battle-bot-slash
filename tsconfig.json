@@ -13,7 +13,7 @@
       "@client": ["./src/structures/BotClient.ts"],
       "@events/*": ["./src/events/*"],
       "@commands/*": ["./src/commands/*"],
-      "@types": ["./types/index.d.ts"],
+      "@types": ["typings/index.d.ts"],
       "@managers/*": ["./src/managers/*"],
       "@schemas/*": ["./src/schemas/*"]
     },
@@ -24,7 +24,8 @@
     "allowSyntheticDefaultImports": true,
     "listEmittedFiles": true,
     "allowJs": true,
+    "resolveJsonModule": true
   },
-  "include": ["./src/**/*", "./types/**/*", "./config.js"],
+  "include": ["./src/**/*", "typings/**/*", "./config.ts"],
   "exclude": ["node_modules", "build", "**/*.spec.js", ".github"]
 }

@@ -1,15 +1,14 @@
-const CommandManager = require('../managers/CommandManager')
-const ErrorManager = require('../managers/ErrorManager')
+import BotClient from '@client'
+import { MessageCommand } from '@types'
+import { Message } from 'discord.js'
+//import CommandManager from '@managers/CommandManager'
+//import ErrorManager from '@managers/ErrorManager'
 
-module.exports = {
+export default {
 	name: 'messageCreate',
-	/**
-   * @param {import('../structures/BotClient')} client 
-   * @param {import('discord.js').Message} message 
-   */
-	async execute(client, message) {
-		const commandManager = new CommandManager(client)
-		const errorManager = new ErrorManager(client)
+	async execute(client: BotClient, message: Message) {
+		//const commandManager = new CommandManager(client)
+		//const errorManager = new ErrorManager(client)
 
 		message.guild.channels.cache.forEach(async channel => {
 			if(channel.isText()) return channel.messages.fetch().catch(() => {})
@@ -21,14 +20,16 @@ module.exports = {
 
 		const args = message.content.slice(client.config.bot.prefix.length).trim().split(/ +/g)
 		const commandName = args.shift().toLowerCase()
-		const command = commandManager.get(commandName)
+		//const command = commandManager.get(commandName) as MessageCommand
     
 		await client.dokdo.run(message)
 
 		try {
-			await command?.execute(client, message, args)
+			//await command?.execute(client, message, args)
 		} catch (error) {
-			errorManager.report(error, message)
+			/*errorManager.report(error, {
+				executer: message,
+			})*/
 		}
 	}
 }

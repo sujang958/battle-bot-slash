@@ -1,7 +1,7 @@
-const { Message } = require('discord.js')
-const config = require('../../config')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const LogEmbed = require('../utils/LogEmbed')
+import { Message } from 'discord.js'
+import config from '../../config'
+import LoggerSetting from '../schemas/LogSettingSchema'
+import LogEmbed from '../utils/LogEmbed'
 
 module.exports = {
 	name: 'messageDelete',
@@ -32,6 +32,7 @@ module.exports = {
 			embed.fields.push({
 				'name': '파일',
 				'value': message.attachments.map(file => `[링크](${file.url})`).join('\n'),
+				'inline': false
 			})
 		}
 

@@ -1,15 +1,11 @@
-const { MessageReaction, Collection, Message, reactions, User } = require('discord.js')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const Embed = require('../utils/LogEmbed')
+import BotClient from '@client'
+import { MessageReaction, Message,TextChannel } from 'discord.js'
+import LoggerSetting from '../schemas/LogSettingSchema'
+import Embed from '../utils/LogEmbed'
 
 module.exports = {
 	name: 'messageReactionRemoveAll',
-	/**
-   * @param {import('../structures/BotClient')} client 
-   * @param {Message} message
-   * @param {MessageReaction} reactions
-   */
-	async execute(client, message, reactions) {
+	async execute(client: BotClient, message: Message, reactions: MessageReaction) {
 		const { guild } = message
 		if(!guild) return
 		if(message.partial) await message.fetch()
@@ -18,7 +14,7 @@ module.exports = {
 		if(!LoggerSettingDB) return
 		if(!LoggerSettingDB.useing.memberBan) return
 
-		const logChannel = guild.channels.cache.get(LoggerSettingDB.guild_channel_id)
+		const logChannel = guild.channels.cache.get(LoggerSettingDB.guild_channel_id) as TextChannel
 		if(!logChannel) return
 
 		const embed = new Embed(client, 'error')

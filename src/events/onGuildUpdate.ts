@@ -1,21 +1,16 @@
-const { GuildBan, Guild } = require('discord.js')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const LogEmbed = require('../utils/LogEmbed')
+import BotClient from '@client'
+import { GuildBan, Guild, TextChannel} from 'discord.js'
+import LoggerSetting from '../schemas/LogSettingSchema'
+import LogEmbed from '../utils/LogEmbed'
 
 
 module.exports = {
 	name: 'guildUpdate',
-	/**
-   * 
-   * @param {import('../structures/BotClient')} client 
-   * @param {Guild} oldGuild 
-   * @param {Guild} newGuild  
-   */
-	async execute(client, oldGuild, newGuild) {
+	async execute(client: BotClient, oldGuild: Guild, newGuild: Guild) {
 		const LoggerSettingDB = await LoggerSetting.findOne({guild_id: newGuild.id})
 		if(!LoggerSettingDB) return
 		if(!LoggerSettingDB.useing.memberBan) return
-		const logChannel = newGuild.channels.cache.get(LoggerSettingDB.guild_channel_id)
+		const logChannel = newGuild.channels.cache.get(LoggerSettingDB.guild_channel_id) as TextChannel
 		if(!logChannel) return
 		const embed = new LogEmbed(client, 'warn')
 			.setDescription('서버 수정')

@@ -1,4 +1,5 @@
-module.exports = class DateFormatting {
+
+export default class DateFormatting {
 	static _format (date: Date|number, style: string) {
 		return `<t:${Math.floor(Number(date) / 1000)}` + (style ? `:${style}` : '') + '>'
 	}

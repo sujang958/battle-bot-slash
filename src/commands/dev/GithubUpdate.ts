@@ -1,21 +1,18 @@
 
-const Discord = require('discord.js')
-const Embed = require('../../utils/Embed')
-const fetch = require('node-fetch')
-const child = require('child_process')
-const { repository } = require('../../../package.json')
+import Discord, { Message } from 'discord.js'
+import Embed from '../../utils/Embed'
+import fetch from 'node-fetch'
+import child from 'child_process'
+import { repository } from '../../../package.json'
+import BotClient from '@client'
+import { GithubCommitAPI } from '@types'
 
 module.exports = {
   name: 'update',
   description : '최신 업데이트 내용을 확인합니다.',
   aliases: ['업데이트', 'djqepdlxm', '촏차', 'check'],
   isSlash: false,
-  /**
-   * @param {import('../../structures/BotClient')} client 
-   * @param {Discord.Message} message 
-   * @param {string[]} args 
-   */
-  async execute(client, message, args) {
+  async execute(client: BotClient, message: Message, args: string[]) {
     if(!client.dokdo.owners.includes(message.author.id))
       return message.reply(`해당 명령어는 ${client.user.username}의 주인이 사용할 수 있는 명령어입니다.`)
 
@@ -32,7 +29,7 @@ module.exports = {
       await msg.edit({embeds: [LoadingEmbed]})
     }
 
-    let repo = repository.replaceAll('https://github.com/', '')
+    let repo = repository.replace('https://github.com/', '')
     if(process.env.GITHUB_TOKEN ?? client.config?.githubToken !== '') {
       fetch(`https://api.github.com/repos/${repo}/commits`, {
         headers: {
@@ -46,7 +43,7 @@ module.exports = {
 
           msg.edit({embeds: [LoadingEmbed]})
         } else {
-          res.json().then((json) => {
+          res.json().then((json: GithubCommitAPI[]) => {
             if(json[0].sha.trim().substring(0, 6) === client.BUILD_NUMBER) {
               let SuccessEmbed = new Embed(client, 'success')
                 .setTitle('확인 완료!')
@@ -57,7 +54,7 @@ module.exports = {
               return msg.edit({embeds: [SuccessEmbed]})
             } else {
               let count = 0
-              json.forEach(commit => {
+              json.forEach((commit) => {
             
                 count++
                 if(commit.sha.trim().substring(0, 6) === client.BUILD_NUMBER) {
@@ -99,12 +96,12 @@ module.exports = {
                     }
                   })
                   msg.edit({embeds: [NewUpdateEmbed], components: [components]})
-                } /*else {
+                } else {
                   let BranchErrorEmbed = new Embed(client, 'error')
                     .setTitle('뭔가 잘못된거 같아요...')
                     .setDescription('업데이트를 정보를 찾을수 없습니다. 브랜치가 다른걸수도 있습니다.\n기본 브랜치를 바꿔보는건 어떨까요?')
                   msg.edit({embeds: [BranchErrorEmbed]})
-                }*/
+                }
               })
             }
           })
@@ -119,7 +116,7 @@ module.exports = {
 
           msg.edit({embeds: [LoadingEmbed]})
         } else {
-          res.json().then((json) => {
+          res.json().then((json: GithubCommitAPI[]) => {
             if(json[0].sha.trim().substring(0, 6) === client.BUILD_NUMBER) {
               let SuccessEmbed = new Embed(client, 'success')
                 .setTitle('확인 완료!')

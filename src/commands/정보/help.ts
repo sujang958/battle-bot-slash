@@ -1,6 +1,7 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const Discord = require('discord.js')
-const Embed = require('../../utils/Embed')
+import BotClient from '@client'
+import { SlashCommandBuilder } from '@discordjs/builders'
+import Discord, { Message } from 'discord.js'
+import Embed from '../../utils/Embed'
 
 module.exports = {
   name: 'help',
@@ -12,7 +13,7 @@ module.exports = {
    * @param {Discord.Message} message 
    * @param {string[]} args 
    */
-  async execute(client, message, args) {
+  async execute(client: BotClient, message: Message, args: string[]) {
     let embed = new Embed(client, 'success')
       .setTitle(`${client.user.username} 도움말`)
     if (!args[0]) {
@@ -52,12 +53,7 @@ module.exports = {
       .setDescription('봇의 도움말을 보여줍니다.')
       .addStringOption(option => option.setName('category').setDescription('카테고리를 적어주세요').setRequired(false))
       .toJSON(),
-    /**
-     * 
-     * @param {import('../../structures/BotClient')} client 
-     * @param {Discord.CommandInteraction} interaction 
-     */
-    async execute(client, interaction) {
+    async execute(client: BotClient, interaction: Discord.CommandInteraction) {
       let embed = new Embed(client, 'success')
         .setTitle(`${client.user.username} 도움말`)
       if (!interaction.options.getString('category')) {
@@ -93,10 +89,7 @@ module.exports = {
   }
 }
 
-function cmdFormat(cmds, client) {
-  /**
-   * @type {import('../../structures/BotClient').Command[]}
-   */
+function cmdFormat(cmds: any[], client: BotClient) {
   var array = new Array()
 
   Object.values(cmds).forEach(c => array.push(client.commands.get(c)))

@@ -45,7 +45,7 @@ export default class DatabaseManager extends BaseManager {
 			schemaFolder.forEach(schemaFile => {
 				try {
 					if(schemaFile.startsWith('example')) return
-					if(!schemaFile.endsWith('.js')) return this.logger.warn(`Not a Javascript file ${schemaFile}. Skipping.`)
+					if(!schemaFile.endsWith('.ts')) return this.logger.warn(`Not a TypeScript file ${schemaFile}. Skipping.`)
 
 					const schema = import(`../schemas/${schemaFile}`)
 

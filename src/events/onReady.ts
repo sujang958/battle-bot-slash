@@ -1,13 +1,11 @@
-const Logger = require('../utils/Logger')
+import BotClient from '@client'
+import Logger from '@utils/Logger'
 const logger = new Logger('bot')
 
 module.exports = {
 	name: 'ready',
 	once: true,
-	/**
-   * @param {import('../structures/BotClient')} client 
-   */
-	async execute(client) {
+	async execute(client: BotClient) {
 		logger.info(`Logged ${client.user.username}`)
 
 

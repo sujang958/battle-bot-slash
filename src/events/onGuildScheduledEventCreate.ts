@@ -1,22 +1,18 @@
-const { GuildMember, GuildScheduledEvent } = require('discord.js')
-const { value } = require('mongoose/lib/options/propertyOptions')
-const { LoggerSetting } = require('../schemas/LogSettingSchema')
-const DateFormatting = require('../utils/DateFormatting')
-const LogEmbed = require('../utils/LogEmbed')
+import BotClient from '@client'
+import { GuildMember, GuildScheduledEvent, TextChannel } from 'discord.js'
+import { value } from 'mongoose/lib/options/propertyOptions'
+import LoggerSetting from '../schemas/LogSettingSchema'
+import DateFormatting from '../utils/DateFormatting'
+import LogEmbed from '../utils/LogEmbed'
 
 
 module.exports = {
 	name: 'guildScheduledEventDelete',
-	/**
-   * 
-   * @param {import('../structures/BotClient')} client 
-   * @param {GuildScheduledEvent} guildScheduledEvent 
-   */
-	async execute(client, guildScheduledEvent) {
+	async execute(client: BotClient, guildScheduledEvent: GuildScheduledEvent) {
 		const LoggerSettingDB = await LoggerSetting.findOne({guild_id: guildScheduledEvent.guild.id})
 		if(!LoggerSettingDB) return
 		if(!LoggerSettingDB.useing.memberJoin) return
-		const logChannel = guildScheduledEvent.guild.channels.cache.get(LoggerSettingDB.guild_channel_id)
+		const logChannel = guildScheduledEvent.guild.channels.cache.get(LoggerSettingDB.guild_channel_id) as TextChannel
 		if(!logChannel) return
 		const embed = new LogEmbed(client, 'error')
 			.setDescription('이벤트 삭제')

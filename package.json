@@ -4,7 +4,6 @@
   "repository": "https://github.com/kiss8981/battle-bot-slash",
   "author": "Kisss",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --transpile-only --respawn -r tsconfig-paths/register --watch ./src/**/*.pug,./src/**/*.graphql --trace-warnings --trace-uncaught -- ./src/index.ts",
     "start": "NODE_ENV=production ts-node --transpile-only -r tsconfig-paths/register src/index.ts",
@@ -26,7 +25,7 @@
     "module-alias": "^2.2.2",
     "mongodb": "^4.3.1",
     "mongoose": "^6.0.13",
-    "node-fetch": "^3.2.0",
+    "node-fetch": "^2.6.7",
     "quick.db": "^7.1.3",
     "randomstring": "^1.2.2",
     "strip-ansi": "^6.0.1",
@@ -46,6 +45,7 @@
     "eslint": "^8.1.0",
     "nodemon": "^2.0.14",
     "ts-node": "^10.4.0",
+    "tsconfig-paths": "^3.12.0",
     "tspath": "^1.3.7",
     "typescript": "^4.5.5"
   },
